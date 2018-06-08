@@ -1,15 +1,24 @@
 package com.wuliji.seckill.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.wuliji.seckill.domain.User;
+import com.wuliji.seckill.redis.RedisService;
 import com.wuliji.seckill.result.CodeMsg;
 import com.wuliji.seckill.result.Result;
+import com.wuliji.seckill.service.UserService;
 
 @RestController
 @RequestMapping("/demo")
-public class HelloController {
+public class TestController {
+	
+	@Autowired
+	private UserService userSerivce;
+	@Autowired
+	private RedisService redisService;
 	
 	@RequestMapping("/hello2")
 	public String hello2() {
@@ -30,5 +39,23 @@ public class HelloController {
 	public String thymeleaf(Model model) {
 		model.addAttribute("name", "wuliji");
 		return "hello";
+	}
+	
+	@RequestMapping("/doget")
+	public Result<User> doGet() {
+		User user = userSerivce.getById(1);
+		return Result.success(user);
+	}
+	
+	@RequestMapping("/dotx")
+	public Result<Boolean> doTx() {
+		boolean tx = userSerivce.tx();
+		return Result.success(true);
+	}
+	
+	@RequestMapping("/redisGet")
+	public Result<Boolean> redisGet() {
+		boolean tx = userSerivce.tx();
+		return Result.success(true);
 	}
 }
