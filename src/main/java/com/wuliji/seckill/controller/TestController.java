@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.wuliji.seckill.domain.User;
 import com.wuliji.seckill.redis.RedisService;
+import com.wuliji.seckill.redis.UserKey;
 import com.wuliji.seckill.result.CodeMsg;
 import com.wuliji.seckill.result.Result;
 import com.wuliji.seckill.service.UserService;
@@ -54,8 +55,18 @@ public class TestController {
 	}
 	
 	@RequestMapping("/redisGet")
-	public Result<Boolean> redisGet() {
-		boolean tx = userSerivce.tx();
-		return Result.success(true);
+	public Result<User> redisGet() {
+		User v1 = redisService.get(UserKey.getById, "" + 1, User.class);
+		return Result.success(v1);
 	}
+	
+	@RequestMapping("/redisSet")
+	public Result<Boolean> redisSet() {
+		User user = new User();
+		user.setId(1);
+		user.setName("zxb1");
+		Boolean set = redisService.set(UserKey.getById, "" + 1, user);
+		return Result.success(set);
+	}
+	
 }
