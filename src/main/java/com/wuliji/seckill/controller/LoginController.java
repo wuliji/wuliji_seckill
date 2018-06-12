@@ -1,5 +1,6 @@
 package com.wuliji.seckill.controller;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import org.apache.commons.lang3.StringUtils;
@@ -32,7 +33,7 @@ public class LoginController {
 	
 	@RequestMapping("/do_login")
 	@ResponseBody
-	public Result<Boolean> doLogin(@Valid LoginVo loginVo) {
+	public Result<Boolean> doLogin(HttpServletResponse response, @Valid LoginVo loginVo) {
 		log.info(loginVo.toString());
 		/*//参数校验
 		String passInput = loginVo.getPassword();
@@ -44,7 +45,7 @@ public class LoginController {
 			return Result.error(CodeMsg.PASSWORD_EMPTY);
 		}*/
 		//登录
-		boolean ret = userService.login(loginVo);
+		boolean ret = userService.login(response, loginVo);
 		return Result.success(ret);
 	}
 	
