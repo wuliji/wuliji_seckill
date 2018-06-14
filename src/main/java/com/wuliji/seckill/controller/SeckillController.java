@@ -29,6 +29,13 @@ public class SeckillController {
 	private OrderService orderService;
 	
 	@RequestMapping("/do_seckill")
+	/**
+	 * QPS 1300 5000并发 10次
+	 * @param model
+	 * @param user
+	 * @param goodsId
+	 * @return
+	 */
 	public String seckill(Model model, SeckillUser user,
 			@RequestParam("goodsId")long goodsId) {
 		model.addAttribute("user", user);
@@ -46,6 +53,7 @@ public class SeckillController {
 		SeckillOrder order = orderService.getSeckillOrderByUserIdGoodsId(user.getId(), goodsId);
 		if(order != null) {
 			model.addAttribute("errorMsg", CodeMsg.SECKILL_REPEAT.getMsg());
+			return "seckill_fail";
 		}
 		//减库存 下订单 写入秒杀订单
 		OrderInfo orderInfo = seckillService.seckill(user, goods);

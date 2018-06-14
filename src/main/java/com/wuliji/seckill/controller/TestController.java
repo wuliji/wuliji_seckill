@@ -1,16 +1,20 @@
 package com.wuliji.seckill.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.wuliji.seckill.domain.SeckillUser;
 import com.wuliji.seckill.domain.User;
 import com.wuliji.seckill.redis.RedisService;
 import com.wuliji.seckill.redis.UserKey;
 import com.wuliji.seckill.result.CodeMsg;
 import com.wuliji.seckill.result.Result;
 import com.wuliji.seckill.service.UserService;
+import com.wuliji.seckill.vo.GoodsVo;
 
 @RestController
 @RequestMapping("/demo")
@@ -67,6 +71,12 @@ public class TestController {
 		user.setName("zxb1");
 		Boolean set = redisService.set(UserKey.getById, "" + 1, user);
 		return Result.success(set);
+	}
+	
+	@RequestMapping("/user")
+	public Result<SeckillUser> toList(Model model, SeckillUser user) {
+		//查询商品列表
+		return Result.success(user);
 	}
 	
 }

@@ -24,6 +24,12 @@ public class GoodsController {
 	private GoodsService goodsService;
 	
 	@RequestMapping("/to_list")
+	/**
+	 * QPS:1200
+	 * @param model
+	 * @param user
+	 * @return
+	 */
 	public String toList(Model model, SeckillUser user) {
 		model.addAttribute("user", user);
 		//查询商品列表
