@@ -29,7 +29,37 @@ public class SeckillUserService {
 	private RedisService redisService;
 	
 	public SeckillUser getById(long id) {
-		return seckillUserDao.getById(id);
+		//取缓存
+		SeckillUser user = redisService.get(SeckillUserKey.getById, ""+id, SeckillUser.class);
+		if(user != null) {
+			return user;
+		}
+		//查数据库
+		user = seckillUserDao.getById(id);
+		if(user != null) {
+			redisService.set(SeckillUserKey.getById, ""+id, user);
+		}
+		return user;
+	}
+	
+	public boolean updatePassword(String token, long id, String passwordNew) {
+		//取User
+		SeckillUser user = getById(id);
+		if(user == null) {
+			throw new GlobalException(CodeMsg.MOBILE_NOT_EXIST);
+		}
+		//更新数据库
+		SeckillUser toUpdate = new SeckillUser();
+		toUpdate.setId(id);
+		toUpdate.setPassword(MD5Utils.formPassToDBPass(passwordNew, user.getSalt()));
+		seckillUserDao.update(toUpdate);
+		//处理缓存 删除数据库对象缓存
+		redisService.delete(SeckillUserKey.getById, ""+id);
+		//更新缓存token
+		user.setPassword(toUpdate.getPassword());
+		redisService.set(SeckillUserKey.token, token,  user);
+		return true;
+		
 	}
 	
 	public SeckillUser getByToken(HttpServletResponse response, String token) {
