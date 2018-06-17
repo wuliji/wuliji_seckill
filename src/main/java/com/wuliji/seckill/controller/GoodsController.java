@@ -19,8 +19,10 @@ import org.thymeleaf.spring4.view.ThymeleafViewResolver;
 import com.wuliji.seckill.domain.SeckillUser;
 import com.wuliji.seckill.redis.GoodsKey;
 import com.wuliji.seckill.redis.RedisService;
+import com.wuliji.seckill.result.Result;
 import com.wuliji.seckill.service.GoodsService;
 import com.wuliji.seckill.service.SeckillUserService;
+import com.wuliji.seckill.vo.GoodsDetailVo;
 import com.wuliji.seckill.vo.GoodsVo;
 
 @Controller
@@ -73,17 +75,17 @@ public class GoodsController {
 		return html;
 	}
 	
-	@RequestMapping(value="/to_detail/{goodsId}",produces="text/html")
+	@RequestMapping(value="/detail/{goodsId}")
 	@ResponseBody
-	public String detail(HttpServletRequest request, HttpServletResponse response, Model model, SeckillUser user,
+	public Result<GoodsDetailVo> detail(HttpServletRequest request, HttpServletResponse response, Model model, SeckillUser user,
 			@PathVariable("goodsId") long goodsId) {
 		model.addAttribute("user", user);
 		//取静态资源缓存
-		String html = redisService.get(GoodsKey.getGoodsDetail, ""+goodsId, String.class);
+		/*String html = redisService.get(GoodsKey.getGoodsDetail, ""+goodsId, String.class);
 		if(!StringUtils.isEmpty(html)) {
 			return html;
 		}
-		
+		*/
 		GoodsVo goods = goodsService.getGoodsVoByGoodsId(goodsId);
 		model.addAttribute("goods", goods);
 		
@@ -109,14 +111,20 @@ public class GoodsController {
 		model.addAttribute("remainSeconds", remainSeconds);
 		//return "goods_detail";
 		
-		SpringWebContext ctx = new SpringWebContext(request, response, 
+		/*SpringWebContext ctx = new SpringWebContext(request, response, 
 				request.getServletContext(), request.getLocale(), model.asMap(), applicationContext);
 		//手动渲染
 		html = thymeleafViewResolver.getTemplateEngine().process("goods_detail", ctx);
 		if(!StringUtils.isEmpty(html)) {
 			redisService.set(GoodsKey.getGoodsDetail, ""+goodsId, html);
 		}
-		return html;
+		return html;*/
+		GoodsDetailVo vo = new GoodsDetailVo();
+		vo.setGoodsVo(goods);
+		vo.setSeckillUser(user);
+		vo.setRemainSeconds(remainSeconds);
+		vo.setSeckillStatus(seckillStatus);
+		return Result.success(vo);
 	}
 
 }
