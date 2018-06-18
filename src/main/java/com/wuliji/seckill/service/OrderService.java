@@ -10,6 +10,8 @@ import com.wuliji.seckill.dao.OrderDao;
 import com.wuliji.seckill.domain.OrderInfo;
 import com.wuliji.seckill.domain.SeckillOrder;
 import com.wuliji.seckill.domain.SeckillUser;
+import com.wuliji.seckill.redis.OrderKey;
+import com.wuliji.seckill.redis.RedisService;
 import com.wuliji.seckill.vo.GoodsVo;
 
 @Service
@@ -18,8 +20,12 @@ public class OrderService {
 	@Autowired
 	private OrderDao orderDao;
 	
+	@Autowired
+	private RedisService redisService;
+	
 	public SeckillOrder getSeckillOrderByUserIdGoodsId(long userId, long goodsId) {
-		return orderDao.getSeckillOrderByUserIdGoodsId(userId, goodsId);
+		//return orderDao.getSeckillOrderByUserIdGoodsId(userId, goodsId);
+		return redisService.get(OrderKey.getSeckillOrderByUidGid, ""+userId+"_"+goodsId, SeckillOrder.class);
 	}
 	
 	@Transactional
@@ -40,7 +46,13 @@ public class OrderService {
 		seckillOrder.setOrderId(orderId);
 		seckillOrder.setUserId(user.getId());
 		orderDao.insertSeckillOrder(seckillOrder);
+		//将订单写入缓存中去
+		redisService.set(OrderKey.getSeckillOrderByUidGid, ""+user.getId()+"_"+goods.getId(), seckillOrder);
 		return orderInfo;
+	}
+
+	public OrderInfo getOrderById(long orderId) {
+		return orderDao.getOrderById(orderId);
 	}
 	
 }
