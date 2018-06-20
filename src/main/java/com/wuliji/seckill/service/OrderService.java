@@ -43,7 +43,7 @@ public class OrderService {
 		long orderId = orderDao.insertOrder(orderInfo);
 		SeckillOrder seckillOrder = new SeckillOrder();
 		seckillOrder.setGoodsId(goods.getId());
-		seckillOrder.setOrderId(orderId);
+		seckillOrder.setOrderId(orderInfo.getId());
 		seckillOrder.setUserId(user.getId());
 		orderDao.insertSeckillOrder(seckillOrder);
 		//将订单写入缓存中去

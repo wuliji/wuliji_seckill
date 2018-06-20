@@ -18,7 +18,7 @@ public class MQSender {
 	@Autowired
 	private AmqpTemplate amqpTemplate;
 	
-	public void send(Object message) {
+/*	public void send(Object message) {
 		String msg = RedisService.beanToString(message);
 		log.info("send message" + msg);
 		amqpTemplate.convertAndSend(MQConfig.QUEUE, msg);
@@ -45,5 +45,11 @@ public class MQSender {
 		properties.setHeader("header2", "value2");
 		Message obj = new Message(msg.getBytes(), properties);
 		amqpTemplate.convertAndSend(MQConfig.HEADER_EXCHANGE, "", obj);
+	}*/
+
+	public void sendSeckillMessage(SeckillMessage sm) {
+		String msg = RedisService.beanToString(sm);
+		log.info("send message" + msg);
+		amqpTemplate.convertAndSend(MQConfig.SECKILL_QUEUE, msg);
 	}
 }
