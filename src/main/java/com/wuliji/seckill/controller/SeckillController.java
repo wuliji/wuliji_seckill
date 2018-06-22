@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.wuliji.seckill.access.AccessLimit;
 import com.wuliji.seckill.domain.SeckillOrder;
 import com.wuliji.seckill.domain.SeckillUser;
 import com.wuliji.seckill.rabbitmq.MQSender;
@@ -147,6 +148,7 @@ public class SeckillController implements InitializingBean{
 	 * @param goodsId
 	 * @return
 	 */
+	@AccessLimit(seconds=5, maxCount=5, needLogin=true)
 	@RequestMapping(value="/path",method=RequestMethod.GET)
 	@ResponseBody
 	public Result<String> seckillPath(HttpServletRequest request, SeckillUser user,
@@ -158,14 +160,6 @@ public class SeckillController implements InitializingBean{
 		//防刷限流，查询访问次数,5秒钟访问5次
 		String uri = request.getRequestURI();
 		String key = uri + "_" + user.getId();
-		Integer count = redisService.get(AccessKey.access, key, Integer.class);
-		if(count == null) {
-			redisService.set(AccessKey.access, key, 1);
-		}else if(count < 5){
-			redisService.incr(AccessKey.access, key);
-		}else {
-			return Result.error(CodeMsg.ACCESS_LIMIT);
-		}
 		//验证图像验证码是否正确
 		boolean check = seckillService.checkVerifyCode(user, goodsId, verifyCode);
 		if(!check) {
