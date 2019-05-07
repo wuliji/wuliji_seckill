@@ -8,6 +8,6 @@ package com.wuliji.seckill;
 public class Test {
 
     public static void main(String[] args) {
-        String a = "";
+        System.out.println("abc");
     }
 }
